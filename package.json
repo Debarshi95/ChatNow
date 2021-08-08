@@ -18,8 +18,8 @@
     "eject": "react-scripts eject",
     "lint": "eslint . --ignore-path .gitignore",
     "lint:fix": "eslint --fix . --ignore-path .gitignore",
-    "format": "prettier --write \"**/*.+(js|jsx|json|css|md)\"",
-    "watch:css": "postcss src/assets/tailwind.css -o src/assets/main.css",
+    "format": "prettier --write . --ignore-path .gitignore",
+    "watch:css": "postcss -w src/styles/tailwind.css -o src/styles/main.css",
     "pre-commit": "lint-staged",
     "prepare": "husky install"
   },
@@ -31,7 +31,6 @@
   "lint-staged": {
     "*.+(js|jsx)": [
       "yarn lint:fix"
-
     ],
     "*.+(json|css|md)": [
       "yarn format"
@@ -42,14 +41,19 @@
       ">0.2%",
       "not dead",
       "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
     ]
   },
   "devDependencies": {
+    "@tailwindcss/jit": "^0.1.18",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
-    "autoprefixer": "^10.3.7",
-    "eslint": "^8.4.0",
+    "autoprefixer": "9",
     "eslint-config-airbnb": "^19.0.2",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-import": "^2.25.3",
@@ -59,9 +63,9 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "husky": "7.0.4",
     "lint-staged": "12.1.2",
-    "postcss": "^8.3.9",
+    "postcss": "8.1.0",
     "postcss-cli": "^9.0.1",
     "prettier": "^2.5.1",
-    "tailwindcss": "^2.2.16"
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat"
   }
 }
