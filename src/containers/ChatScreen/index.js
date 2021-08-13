@@ -1,137 +1,58 @@
-import React from 'react';
+import { collection, onSnapshot, orderBy, query, where } from 'firebase/firestore';
+import React, { useEffect, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useParams } from 'react-router-dom/cjs/react-router-dom.min';
+import MessageCard from '../../components/MessageCard';
+import MessageInput from '../../components/MessageInput';
+import { setMessages, unsetMessages } from '../../store/slices/message';
+import { firestore } from '../../utils/firebase';
 
-const messages = [
-  {
-    id: 1,
-    name: 'Debarshi',
-    message: {
-      content: 'Hi',
-    },
-  },
-  {
-    id: 2,
-    name: 'Roshan',
-    message: {
-      content: 'Hwy',
-    },
-  },
-  {
-    id: 2,
-    name: 'Roshan',
-    message: {
-      content: 'Yo',
-    },
-  },
-  {
-    id: 2,
-    name: 'Roshan',
-    message: {
-      content: 'Bosassa',
-    },
-  },
-  {
-    id: 1,
-    name: 'Debarshi',
-    message: {
-      content: 'Whatsup',
-    },
-  },
-  {
-    id: 1,
-    name: 'Debarshi',
-    message: {
-      content: 'Hi',
-    },
-  },
-  {
-    id: 2,
-    name: 'Roshan',
-    message: {
-      content: 'Hwy',
-    },
-  },
-  {
-    id: 2,
-    name: 'Roshan',
-    message: {
-      content: 'Yo',
-    },
-  },
-  {
-    id: 2,
-    name: 'Roshan',
-    message: {
-      content: 'Bosassa',
-    },
-  },
-  {
-    id: 1,
-    name: 'Debarshi',
-    message: {
-      content: 'Whatsup',
-    },
-  },
-  {
-    id: 1,
-    name: 'Debarshi',
-    message: {
-      content: 'Hi',
-    },
-  },
-  {
-    id: 2,
-    name: 'Roshan',
-    message: {
-      content: 'Hwy',
-    },
-  },
-  {
-    id: 2,
-    name: 'Roshan',
-    message: {
-      content:
-        'Yo Lorem psasssssssssssssssssssssssssssssssssssssssssssssssssssssssqwqwqwwwwwwwwwwwwwwwwwwwww',
-    },
-  },
-  {
-    id: 2,
-    name: 'Roshan',
-    message: {
-      content: 'Bosassa',
-    },
-  },
-  {
-    id: 1,
-    name: 'Debarshi',
-    message: {
-      content: 'Whatsup',
-    },
-  },
-];
 const ChatScreen = () => {
-  // const userid = 1;
+  const { chatId } = useParams();
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
+  const { docs: messages, chatId: stateChatId } = useSelector((state) => state.messages);
+  const dbRef = useRef(firestore);
+
+  useEffect(() => {
+    const dbQuery = query(
+      collection(dbRef.current, 'messages'),
+      where('chatId', '==', chatId),
+      orderBy('createdAt', 'asc')
+    );
+    const unsub = onSnapshot(dbQuery, (snapshot) => {
+      const docs = [];
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === 'added') {
+          docs.push({ id: change.doc.id, ...change.doc.data() });
+        }
+      });
+
+      if (docs.length) {
+        dispatch(setMessages({ chatId, docs }));
+      }
+    });
+
+    return unsub;
+  }, [chatId, dispatch]);
+
+  useEffect(() => {
+    if (chatId !== stateChatId) {
+      dispatch(unsetMessages());
+    }
+  }, [chatId, dispatch, stateChatId]);
+
   return (
-    <div className="flex flex-col">
-      <div className="px-4">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className="p-3 bg-gray-200 rounded-lg my-2 flex flex-col break-words"
-          >
-            <h4 className="text-sm font-normal self-start">{message.name}</h4>
-            <p className="text-base leading-none my-1">{message.message.content}</p>
-            <p className="text-xs font-light">12:00AM</p>
-          </div>
-        ))}
-      </div>
-      <div className="w-full flex items-start sticky px-4 bottom-0 sm:h-24">
-        <textarea
-          className="w-full resize-none outline-none px-3 py-2 overflow-hidden text-sm h-full"
-          placeholder="Write a message..."
-        />
-        <button type="button" className="bg-blue-500 py-2 px-4 text-sm font-semibold text-white">
-          Send
-        </button>
+    <div className="w-full flex sm:w-3/4 mx-auto sm:border-r-1 md:border-l-1 overflow-y-scroll">
+      <div className="flex-1 flex flex-col justify-between">
+        <div className="px-3">
+          {messages.map((message) => (
+            <MessageCard message={message} key={message.id} userId={user?.uid} />
+          ))}
+        </div>
+        <div className="flex bg-black sticky bottom-0">
+          <MessageInput chatId={chatId} userId={user?.uid} />
+        </div>
       </div>
     </div>
   );

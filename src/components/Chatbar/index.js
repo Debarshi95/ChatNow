@@ -1,58 +1,50 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { memo, useEffect, useRef } from 'react';
+import { NavLink } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import Searchbar from '../Searchbar';
+import ChatCard from '../ChatCard';
+import useMemoizedDispatch from '../../hooks/useMemoizedDispatch';
+import { setChat } from '../../store/slices/chat';
+import { firestore } from '../../utils/firebase';
 
-const users = [
-  {
-    id: 1,
-    name: 'Debarshi Bhattacharjee',
-    pic: 'https://franchisematch.com/wp-content/uploads/2015/02/john-doe.jpg',
-  },
-  {
-    id: 2,
-    name: 'Dev',
-    pic: 'https://franchisematch.com/wp-content/uploads/2015/02/john-doe.jpg',
-  },
-  {
-    id: 3,
-    name: 'Roshan',
-    pic: 'https://franchisematch.com/wp-content/uploads/2015/02/john-doe.jpg',
-  },
-];
+const Chatbar = ({ url, user }) => {
+  console.log({ user });
+  const dispatch = useMemoizedDispatch();
+  const dbRef = useRef(firestore);
+  useEffect(() => {
+    const dbQuery = query(
+      collection(dbRef.current, 'chats'),
+      where('users', 'array-contains', user.email)
+    );
+    const unsub = onSnapshot(dbQuery, (snapshot) => {
+      const docs = [];
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === 'added') {
+          docs.push({ id: change.doc.id, ...change.doc.data() });
+        }
+      });
+      if (docs.length > 0) {
+        dispatch(setChat(docs));
+      }
+    });
+    return unsub;
+  }, [dispatch, user.email]);
 
-const Chatbar = () => {
-  const { pathname } = useLocation();
-
+  const chats = useSelector((state) => state.chats.docs);
+  console.log('CAHTBAR rendered', chats);
   return (
-    <div className="bg-white w-full">
-      <div className="px-4 py-3">
-        <input
-          type="search"
-          name="search"
-          aria-label="Search.."
-          placeholder="Search.."
-          className="w-full outline-none font-medium"
-        />
-      </div>
+    <div className="w-full sm:max-w-xs sticky top-0 h-screen border-r-1 overflow-y-scroll">
+      <Searchbar />
       <div>
-        {users.map((user) => (
-          <Link key={user.id} className="sm:pointer-events-none" to={`${pathname}/${user.id}`}>
-            <div className="py-2 px-4 flex h-16 justify-evenly hover:bg-blue-500 cursor-pointer">
-              <img src={user.pic} alt="" className="rounded-full" />
-              <div className="overflow-ellipsis whitespace-nowrap overflow-hidden mx-2 flex flex-col justify-evenly">
-                <h4 className="font-medium">{user.name}</h4>
-                <p className="text-sm">
-                  Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eligendi rerum,
-                  voluptatem quibusdam fugit similique sequi adipisci, doloribus, nostrum distinctio
-                  nobis quod magnam dignissimos debitis. Architecto commodi molestiae incidunt magni
-                  necessitatibus!
-                </p>
-              </div>
-            </div>
-          </Link>
+        {chats.map((chat) => (
+          <NavLink key={chat.id} className="border-b-1 block" to={`${url}/${chat.id}`}>
+            <ChatCard chat={chat} />
+          </NavLink>
         ))}
       </div>
     </div>
   );
 };
 
-export default Chatbar;
+export default memo(Chatbar);
