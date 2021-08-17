@@ -1,7 +1,6 @@
 import Home from '../containers/Home/loadable';
-import SignIn from '../containers/SignIn/loadable';
+import SignUp from '../containers/SignUp/loadable';
 import Chat from '../containers/Chat/loadable';
-import ChatScreen from '../containers/ChatScreen/loadable';
 import routeConstant from './routes';
 
 export default {
@@ -9,16 +8,12 @@ export default {
     component: Home,
     ...routeConstant.home,
   },
-  signIn: {
-    component: SignIn,
-    ...routeConstant.signIn,
+  signup: {
+    component: SignUp,
+    ...routeConstant.signup,
   },
   chats: {
     component: Chat,
     ...routeConstant.chat,
-  },
-  chatScreen: {
-    component: ChatScreen,
-    ...routeConstant.chatScreen,
   },
 };

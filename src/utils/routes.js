@@ -3,16 +3,13 @@ export default {
     route: '/',
     exact: true,
   },
-  signIn: {
-    route: '/signin',
+  signup: {
+    route: '/signup',
     exact: true,
   },
   chat: {
-    route: '/:userId/chats',
-    exact: true,
-  },
-  chatScreen: {
-    route: '/:userId/chats/:chatId',
-    exact: true,
+    route: '/chats',
+    exact: false,
+    isProtected: true,
   },
 };
