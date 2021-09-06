@@ -6,7 +6,7 @@
   .content-container {
     min-height: calc(105vh - theme('spacing.24'));
   }
-  @variants responsive {
+  /* @variants responsive {
     .border-1 {
       border-width: theme('spacing[0.5]');
     }
@@ -29,5 +29,5 @@
   }
   .max-h-inherit {
     max-height: inherit;
-  }
+  } */
 }
