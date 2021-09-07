@@ -4,7 +4,7 @@ import { getChatUserEmail } from '../../utils';
 
 const ChatCard = ({ chat }) => {
   const user = useSelector((state) => state.auth.user);
-  console.log('Rendered Card');
+
   return (
     <div className="py-2 px-4 flex h-16 justify-evenly hover:bg-blue-500 cursor-pointer">
       <img src={chat?.pic || '/assets/placeholder_user.png'} alt="" className="rounded-full" />

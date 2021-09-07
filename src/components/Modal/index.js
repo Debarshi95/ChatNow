@@ -11,10 +11,7 @@ const Modal = ({ open, onRequestClose, onAfterOpen }) => {
 
   const handleAddUser = async () => {
     if (user.email === chatUserEmail) return;
-    const res = await dispatch(
-      createChat({ userEmail: user.email, chatUserEmail, userId: user.uid })
-    ).unwrap();
-    console.log({ res });
+    dispatch(createChat({ userEmail: user.email, chatUserEmail, userId: user.uid }));
   };
 
   const handleEmail = (e) => {

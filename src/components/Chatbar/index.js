@@ -9,7 +9,6 @@ import { setChat } from '../../store/slices/chat';
 import { firestore } from '../../utils/firebase';
 
 const Chatbar = ({ url, user }) => {
-  console.log({ user });
   const dispatch = useMemoizedDispatch();
   const dbRef = useRef(firestore);
   useEffect(() => {
@@ -32,7 +31,7 @@ const Chatbar = ({ url, user }) => {
   }, [dispatch, user.email]);
 
   const chats = useSelector((state) => state.chats.docs);
-  console.log('CAHTBAR rendered', chats);
+
   return (
     <div className="w-full sm:max-w-xs sticky top-0 h-screen border-r-1 overflow-y-scroll">
       <Searchbar />

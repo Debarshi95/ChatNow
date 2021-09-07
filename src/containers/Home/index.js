@@ -20,13 +20,10 @@ const Home = () => {
   const handleSignIn = async () => {
     const { email, password } = formData;
     if (email === '' || password === '') return;
-    try {
-      const res = await dispatch(signIn({ email, password })).unwrap();
-      if (res?.user) {
-        history.push(routes.chat.route);
-      }
-    } catch (error) {
-      console.log({ error });
+
+    const res = await dispatch(signIn({ email, password })).unwrap();
+    if (res?.user) {
+      history.push(routes.chat.route);
     }
   };
   return (

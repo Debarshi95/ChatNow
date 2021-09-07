@@ -1,10 +1,8 @@
-/* eslint-disable prettier/prettier */
-import React, { memo, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { createMessage } from '../../store/slices/message';
 
 const MessageInput = ({ chatId, userId }) => {
-  console.log('MESSAGEINPUT rendered');
   const [input, setInput] = useState('');
   const dispatch = useDispatch();
 
@@ -32,4 +30,4 @@ const MessageInput = ({ chatId, userId }) => {
   );
 };
 
-export default memo(MessageInput);
+export default MessageInput;

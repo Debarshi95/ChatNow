@@ -8,7 +8,7 @@ import routes from '../../utils/routes';
 const SignUp = () => {
   const [formData, setFormData] = useState({ username: '', email: '', password: '' });
   const dispatch = useDispatch();
-  console.log({ formData });
+
   const handleForm = (e) => {
     setFormData({
       ...formData,
@@ -20,8 +20,7 @@ const SignUp = () => {
     const { username, email, password } = formData;
     if (username === '' || email === '' || password === '') return;
     try {
-      const res = await dispatch(signUp({ username, email, password })).unwrap();
-      console.log({ res });
+      await dispatch(signUp({ username, email, password })).unwrap();
     } catch (error) {
       //
     }

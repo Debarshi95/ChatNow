@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
@@ -9,9 +9,6 @@ const Chat = () => {
   const { path, url } = useRouteMatch();
   const { user } = useSelector((state) => state.auth);
   const match = useMediaQuery({ query: '(min-width:600px)' });
-  console.log({ match });
-
-  console.log('REnDRED CHAT');
 
   return (
     <div className="w-full flex md:w-3/4 mx-auto max-h-100vh sm:border-l-1 sm:border-r-1 overflow-hidden">
@@ -35,4 +32,4 @@ const Chat = () => {
   );
 };
 
-export default Chat;
+export default memo(Chat);
