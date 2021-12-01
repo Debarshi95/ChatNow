@@ -11,7 +11,7 @@ const Chat = () => {
   const match = useMediaQuery({ query: '(min-width:600px)' });
 
   return (
-    <div className="w-full flex md:w-3/4 mx-auto max-h-100vh sm:border-l-1 sm:border-r-1 overflow-hidden">
+    <div className="w-full flex md:w-3/4 mx-auto content-container sm:border-l-2 sm:border-r-2 sm:border-b-2">
       <Switch>
         <Route path={path} exact>
           <Chatbar url={url} user={user} />

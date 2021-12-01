@@ -43,14 +43,14 @@ const ChatScreen = () => {
   }, [chatId, dispatch, stateChatId]);
 
   return (
-    <div className="w-full flex sm:w-3/4 mx-auto sm:border-r-1 md:border-l-1 overflow-y-scroll">
-      <div className="flex-1 flex flex-col justify-between">
-        <div className="px-3">
+    <div className="w-full flex sm:w-3/4 mx-auto overflow-y-scroll">
+      <div className="flex-1 flex flex-col h-screen">
+        <div className="px-3 flex-1">
           {messages.map((message) => (
             <MessageCard message={message} key={message.id} userId={user?.uid} />
           ))}
         </div>
-        <div className="flex bg-black sticky bottom-0">
+        <div className="flex bg-black  sticky  bottom-0">
           <MessageInput chatId={chatId} userId={user?.uid} />
         </div>
       </div>

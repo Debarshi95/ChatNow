@@ -25,6 +25,7 @@
     "lint:fix": "eslint --fix . --ignore-path .gitignore",
     "format": "prettier --write . --ignore-path .gitignore",
     "build:css": "postcss src/styles/tailwind.css -o src/styles/main.css",
+    "watch:css": "postcss -w src/styles/tailwind.css -o src/styles/main.css",
     "prebuild": "cross-env NODE_ENV=production yarn run build:css",
     "pre-commit": "lint-staged",
     "prepare": "husky install"
