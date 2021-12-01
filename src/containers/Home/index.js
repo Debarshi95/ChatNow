@@ -27,7 +27,7 @@ const Home = () => {
     }
   };
   return (
-    <div className="w-full md:w-3/5 mx-auto max-h-100vh flex justify-center items-center flex-1 h-screen">
+    <div className="content-container w-full md:w-3/5 mx-auto flex justify-center items-center h-screen">
       <div className="w-full max-w-sm">
         <form className="px-4 md:px-8 pt-6 pb-8 mb-4" autoComplete="off">
           <h4 className="text-center font-medium text-blue-500 text-lg mt-6 mb-8">

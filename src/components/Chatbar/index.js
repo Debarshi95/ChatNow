@@ -33,11 +33,11 @@ const Chatbar = ({ url, user }) => {
   const chats = useSelector((state) => state.chats.docs);
 
   return (
-    <div className="w-full sm:max-w-xs sticky top-0 h-screen border-r-1 overflow-y-scroll">
+    <div className="w-full sm:max-w-xs sticky top-0 h-screen content-container overflow-y-scroll">
       <Searchbar />
       <div>
         {chats.map((chat) => (
-          <NavLink key={chat.id} className="border-b-1 block" to={`${url}/${chat.id}`}>
+          <NavLink key={chat.id} className="border-b-2 block" to={`${url}/${chat.id}`}>
             <ChatCard chat={chat} />
           </NavLink>
         ))}
