@@ -11,6 +11,7 @@ import Home from '../Home/loadable';
 import Chat from '../Chat/loadable';
 import SignUp from '../SignUp/loadable';
 import useMemoizedDispatch from '../../hooks/useMemoizedDispatch';
+import NotFound from '../NotFound';
 
 const App = () => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -39,6 +40,9 @@ const App = () => {
           </Route>
           <Route path={routes.signup.route}>
             {!isAuthenticated ? <SignUp /> : <Redirect to={routes.chat.route} />}
+          </Route>
+          <Route path="*">
+            <NotFound />
           </Route>
         </Switch>
       </React.Suspense>
