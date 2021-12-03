@@ -1,8 +1,8 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { auth, firestore } from '../../utils/firebase';
+import { auth } from '../../utils/firebase';
+import { addUser } from '../../services';
 
 const initialState = {
   user: null,
@@ -11,34 +11,38 @@ const initialState = {
   error: '',
 };
 
-export const signIn = createAsyncThunk('auth/signIn', async (userData, { rejectWithValue }) => {
-  try {
-    const { email, password } = userData;
-    const res = await signInWithEmailAndPassword(auth, email, password);
-    return res;
-  } catch (error) {
-    return rejectWithValue(error?.message);
+export const requestSignIn = createAsyncThunk(
+  'auth/requestSignIn',
+  async (userData, { rejectWithValue }) => {
+    try {
+      const { email, password } = userData;
+      const res = await signInWithEmailAndPassword(auth, email, password);
+      return res;
+    } catch (error) {
+      return rejectWithValue(error?.message);
+    }
   }
-});
+);
 
 export const logOut = createAsyncThunk('auth/signOut', async () => {
   await signOut(auth);
 });
 
-export const signUp = createAsyncThunk('auth/signUp', async (userData, { rejectWithValue }) => {
-  try {
-    const { email, username, password } = userData;
-    const res = await createUserWithEmailAndPassword(auth, email, password);
-    if (res?.user) {
-      const ref = collection(firestore, 'users');
-      const response = await addDoc(ref, { email, username, createdAt: serverTimestamp() });
-      return response;
+export const requestSignup = createAsyncThunk(
+  'auth/requestSignup',
+  async (userData, { rejectWithValue }) => {
+    try {
+      const { email, username, password } = userData;
+      const res = await createUserWithEmailAndPassword(auth, email, password);
+      if (res?.user) {
+        await addUser({ email, username });
+      }
+      return res;
+    } catch (error) {
+      return rejectWithValue(error?.message);
     }
-    return res;
-  } catch (error) {
-    return rejectWithValue(error?.message);
   }
-});
+);
 
 export const authSlice = createSlice({
   name: 'auth',
@@ -56,29 +60,28 @@ export const authSlice = createSlice({
     },
   },
   extraReducers: {
-    [signIn.pending]: (state) => {
+    [requestSignIn.pending]: (state) => {
       state.loading = true;
     },
-    [signIn.rejected]: (state, action) => {
+    [requestSignIn.rejected]: (state, action) => {
       state.loading = false;
       state.error = action.payload;
       state.isAuthenticated = false;
     },
-    [signIn.fulfilled]: (state, action) => {
+    [requestSignIn.fulfilled]: (state, action) => {
       state.user = action.payload.user;
       state.isAuthenticated = true;
       state.loading = false;
     },
-    [signUp.pending]: (state) => {
+    [requestSignup.pending]: (state) => {
       state.loading = true;
     },
-    [signUp.rejected]: (state, action) => {
+    [requestSignup.rejected]: (state, action) => {
       state.loading = false;
       state.error = action.payload;
       state.isAuthenticated = false;
     },
-    [signUp.fulfilled]: (state, action) => {
-      state.user = action.payload.user;
+    [requestSignup.fulfilled]: (state) => {
       state.isAuthenticated = true;
       state.loading = false;
     },
