@@ -1,50 +1,23 @@
-import { collection, onSnapshot, orderBy, query, where } from 'firebase/firestore';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom/cjs/react-router-dom.min';
 import MessageCard from '../../components/MessageCard';
 import MessageInput from '../../components/MessageInput';
-import { setMessages, unsetMessages } from '../../store/slices/message';
-import { firestore } from '../../utils/firebase';
+import { requestLoadMessages } from '../../store/slices/message';
 
 const ChatScreen = () => {
   const { chatId } = useParams();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
-  const { docs: messages, chatId: stateChatId } = useSelector((state) => state.messages);
-  const dbRef = useRef(firestore);
+  const messages = useSelector((state) => state.messages.docs);
 
   useEffect(() => {
-    const dbQuery = query(
-      collection(dbRef.current, 'messages'),
-      where('chatId', '==', chatId),
-      orderBy('createdAt', 'asc')
-    );
-    const unsub = onSnapshot(dbQuery, (snapshot) => {
-      const docs = [];
-      snapshot.docChanges().forEach((change) => {
-        if (change.type === 'added') {
-          docs.push({ id: change.doc.id, ...change.doc.data() });
-        }
-      });
-
-      if (docs.length) {
-        dispatch(setMessages({ chatId, docs }));
-      }
-    });
-
-    return unsub;
+    dispatch(requestLoadMessages(chatId));
   }, [chatId, dispatch]);
-
-  useEffect(() => {
-    if (chatId !== stateChatId) {
-      dispatch(unsetMessages());
-    }
-  }, [chatId, dispatch, stateChatId]);
 
   return (
     <div className="w-full flex sm:w-3/4 mx-auto overflow-y-scroll">
-      <div className="flex-1 flex flex-col h-screen">
+      <div className="flex-1 flex flex-col">
         <div className="px-3 flex-1">
           {messages.map((message) => (
             <MessageCard message={message} key={message.id} userId={user?.uid} />

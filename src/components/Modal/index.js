@@ -1,22 +1,37 @@
-import React, { memo, useState } from 'react';
+import React, { memo } from 'react';
+import * as Yup from 'yup';
+import { Form, Formik } from 'formik';
 import ReactModal from 'react-modal';
 import { useDispatch, useSelector } from 'react-redux';
-import { createChat } from '../../store/slices/chat';
+import { requestCreateChat } from '../../store/slices/chat';
+import { validateEmail } from '../../utils/formValidation';
 import FormInput from '../FormInput';
 
 const Modal = ({ open, onRequestClose, onAfterOpen }) => {
-  const [chatUserEmail, setChatUserEmail] = useState('');
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
 
-  const handleAddUser = async () => {
-    if (user.email === chatUserEmail) return;
-    dispatch(createChat({ userEmail: user.email, chatUserEmail, userId: user.uid }));
+  const handleAddUser = async (formData, { setFieldError, setSubmitting, resetForm }) => {
+    const { email } = formData;
+    if (!email) return;
+    if (user.email === email) {
+      setFieldError('email', 'User email must be different from your email');
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await dispatch(
+        requestCreateChat({ userEmail: user.email, chatUserEmail: email, userId: user.uid })
+      ).unwrap();
+      resetForm('');
+      onRequestClose();
+      setSubmitting(false);
+    } catch (error) {
+      setSubmitting(false);
+      setFieldError('email', error);
+    }
   };
 
-  const handleEmail = (e) => {
-    setChatUserEmail(e.target.value);
-  };
   return (
     <ReactModal
       isOpen={open}
@@ -27,24 +42,30 @@ const Modal = ({ open, onRequestClose, onAfterOpen }) => {
       overlayClassName="bg-black bg-opacity-30 fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center"
       ariaHideApp={false}
     >
-      <div className="flex justify-between mb-2">
-        <h2 className="font-medium text-blue-500 text-base">Add User</h2>
+      <div className="flex justify-end mb-2">
         <button type="button" onClick={onRequestClose}>
           Cross
         </button>
       </div>
-      <form className="flex flex-col">
-        <div className="mb-4">
-          <FormInput type="email" name="email" placeholder="User Email" onChange={handleEmail} />
-        </div>
-        <button
-          type="button"
-          className="bg-blue-500 py-2 mb-5 font-medium text-white"
-          onClick={handleAddUser}
-        >
-          Add user
-        </button>
-      </form>
+
+      <Formik
+        initialValues={{ email: '' }}
+        onSubmit={handleAddUser}
+        className="flex flex-col"
+        validationSchema={Yup.object({
+          email: validateEmail(),
+        })}
+      >
+        <Form className="mb-4" noValidate>
+          <FormInput type="email" name="email" placeholder="User Email" label="User Email" />
+          <button
+            type="submit"
+            className="bg-blue-500 py-2 mt-1 mb-5 w-full font-medium text-white"
+          >
+            Add User
+          </button>
+        </Form>
+      </Formik>
     </ReactModal>
   );
 };
