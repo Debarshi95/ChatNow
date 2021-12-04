@@ -1,33 +1,30 @@
 /* eslint-disable no-param-reassign */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { addDoc, collection, getDoc, query, serverTimestamp, where } from 'firebase/firestore';
-import { firestore } from '../../utils/firebase';
+import { addMessage, getMessages } from '../../services';
 
-export const loadMessages = createAsyncThunk(
+export const requestLoadMessages = createAsyncThunk(
   'message/loadMessage',
   async (chatId, { rejectWithValue }) => {
     try {
-      const docRef = query(collection(firestore, 'messages'), where('chatId', '==', chatId));
-      const res = await getDoc(docRef);
-      return res;
+      const res = await getMessages(chatId);
+      const docs = [];
+      if (res.size > 0) {
+        res.docs.forEach((doc) => docs.push({ id: doc.id, ...doc.data() }));
+      }
+      return docs;
     } catch (error) {
       return rejectWithValue(error?.message);
     }
   }
 );
 
-export const createMessage = createAsyncThunk(
+export const requestCreateMessage = createAsyncThunk(
   'message/createMessage',
-  async (messageData, { rejectWithValue }) => {
+  async (messageData, { rejectWithValue, dispatch }) => {
     try {
       const { message, chatId, sentBy } = messageData;
-      const dbQuery = collection(firestore, 'messages');
-      const res = await addDoc(dbQuery, {
-        message,
-        chatId,
-        sentBy,
-        createdAt: serverTimestamp(),
-      });
+      const res = await addMessage({ chatId, message, userId: sentBy });
+      dispatch(requestLoadMessages(chatId));
       return res;
     } catch (error) {
       return rejectWithValue(error?.message);
@@ -56,10 +53,10 @@ export const chatSlice = createSlice({
     },
   },
   extraReducers: {
-    [loadMessages.pending]: (state) => {
+    [requestLoadMessages.pending]: (state) => {
       state.loading = true;
     },
-    [loadMessages.fulfilled]: (state, action) => {
+    [requestLoadMessages.fulfilled]: (state, action) => {
       state.docs = action.payload;
       state.loading = false;
       state.error = '';

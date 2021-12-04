@@ -1,28 +1,42 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { firestore } from '../../utils/firebase';
+import { addChat, doesChatUserExist, getChats } from '../../services';
 
 const initialState = {
   docs: [],
   loading: true,
   error: '',
 };
-
-export const createChat = createAsyncThunk(
+export const requestLoadChats = createAsyncThunk(
+  'chat/loadChats',
+  async (userId, { rejectWithValue }) => {
+    try {
+      const res = await getChats(userId);
+      const docs = [];
+      if (res.size > 0) {
+        res.docs.forEach((doc) => docs.push({ id: doc.id, ...doc.data() }));
+      }
+      return docs;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+export const requestCreateChat = createAsyncThunk(
   'chat/createChat',
-  async (chatData, { rejectWithValue }) => {
+  async (chatData, { rejectWithValue, dispatch }) => {
     try {
       const { userEmail, chatUserEmail, userId } = chatData;
-      const dbRef = collection(firestore, 'chats');
-
-      const res = await addDoc(dbRef, {
-        users: [userEmail, chatUserEmail],
-        createdAt: serverTimestamp(),
-        createdBy: userId,
-      });
-
-      return res;
+      const res = await doesChatUserExist({ chatUserEmail, userId });
+      // Reject if chat user already exists;
+      if (res.size > 0) {
+        return rejectWithValue('User already exists');
+      }
+      // Else add the user to database
+      const response = await addChat({ userEmail, userId, chatUserEmail });
+      // Dispatch loadChats to populate the UI
+      dispatch(requestLoadChats(userEmail));
+      return response;
     } catch (error) {
       return rejectWithValue(error?.message);
     }
@@ -31,14 +45,20 @@ export const createChat = createAsyncThunk(
 export const chatSlice = createSlice({
   name: 'chat',
   initialState,
-  reducers: {
-    setChat: (state, action) => {
-      state.docs = [...state.docs, ...action.payload];
+  extraReducers: {
+    [requestLoadChats.pending]: (state) => {
+      state.loading = true;
+      state.error = '';
+    },
+    [requestLoadChats.fulfilled]: (state, action) => {
+      state.docs = action.payload;
+      state.loading = false;
+    },
+    [requestLoadChats.rejected]: (state, action) => {
+      state.error = action.payload;
       state.loading = false;
     },
   },
-  extraReducers: {},
 });
 
-export const { setChat } = chatSlice.actions;
 export default chatSlice.reducer;
