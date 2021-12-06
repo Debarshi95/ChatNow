@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import * as Yup from 'yup';
+import { FaWindowClose } from 'react-icons/fa';
 import { Form, Formik } from 'formik';
 import ReactModal from 'react-modal';
 import { useDispatch, useSelector } from 'react-redux';
@@ -44,7 +45,7 @@ const Modal = ({ open, onRequestClose, onAfterOpen }) => {
     >
       <div className="flex justify-end mb-2">
         <button type="button" onClick={onRequestClose}>
-          Cross
+          <FaWindowClose className="text-blue-500" />
         </button>
       </div>
 

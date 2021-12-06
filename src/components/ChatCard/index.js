@@ -11,9 +11,7 @@ const ChatCard = ({ chat }) => {
       <div className="whitespace-nowrap overflow-hidden mx-2 flex flex-col justify-evenly">
         {user?.email && <h4 className="font-medium">{getChatUserEmail(user.email, chat.users)}</h4>}
         <p className="text-sm overflow-hidden overflow-ellipsis">
-          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eligendi rerum, voluptatem
-          quibusdam fugit similique sequi adipisci, doloribus, nostrum distinctio nobis quod magnam
-          dignissimos debitis. Architecto commodi molestiae incidunt magni necessitatibus!
+          Lorem ipsum, dolor sit amet consectetur adipisicing elit.
         </p>
       </div>
     </div>

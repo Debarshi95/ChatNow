@@ -1,7 +1,6 @@
 import React, { memo, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import Searchbar from '../Searchbar';
 import ChatCard from '../ChatCard';
 import useMemoizedDispatch from '../../hooks/useMemoizedDispatch';
 import { requestLoadChats } from '../../store/slices/chat';
@@ -20,7 +19,6 @@ const Chatbar = ({ url }) => {
 
   return (
     <div className="w-full sm:max-w-xs sticky top-0 h-screen content-container overflow-y-scroll">
-      <Searchbar />
       <div>
         {chats.map((chat) => (
           <NavLink key={chat.id} className="border-b-2 block" to={`${url}/${chat.id}`}>

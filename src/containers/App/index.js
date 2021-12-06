@@ -12,6 +12,7 @@ import Chat from '../Chat/loadable';
 import SignUp from '../SignUp/loadable';
 import useMemoizedDispatch from '../../hooks/useMemoizedDispatch';
 import NotFound from '../NotFound';
+import Loader from '../../components/Loader';
 
 const App = () => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -30,7 +31,7 @@ const App = () => {
   return (
     <Router>
       <Navbar />
-      <React.Suspense fallback={<h1>Fallback</h1>}>
+      <React.Suspense fallback={<Loader />}>
         <Switch>
           <Route path={routes.home.route} exact>
             {isAuthenticated ? <Redirect to={routes.chat.route} /> : <Home />}
