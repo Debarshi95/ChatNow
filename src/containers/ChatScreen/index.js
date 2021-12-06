@@ -1,9 +1,11 @@
+import { collection, onSnapshot, orderBy, query, where } from 'firebase/firestore';
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom/cjs/react-router-dom.min';
 import MessageCard from '../../components/MessageCard';
 import MessageInput from '../../components/MessageInput';
-import { requestLoadMessages } from '../../store/slices/message';
+import { setMessages } from '../../store/slices/message';
+import { firestore } from '../../utils/firebase';
 
 const ChatScreen = () => {
   const { chatId } = useParams();
@@ -12,7 +14,23 @@ const ChatScreen = () => {
   const messages = useSelector((state) => state.messages.docs);
 
   useEffect(() => {
-    dispatch(requestLoadMessages(chatId));
+    const q = query(
+      collection(firestore, 'messages'),
+      where('chatId', '==', chatId),
+      orderBy('createdAt', 'asc')
+    );
+    onSnapshot(q, (snapshot) => {
+      const docs = [];
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === 'added') {
+          docs.push({ id: change.doc.id, ...change.doc.data() });
+        }
+      });
+
+      if (docs.length > 0) {
+        dispatch(setMessages({ chatId, docs }));
+      }
+    });
   }, [chatId, dispatch]);
 
   return (

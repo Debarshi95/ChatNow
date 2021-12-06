@@ -8,7 +8,7 @@ const initialState = {
   error: '',
 };
 export const requestLoadChats = createAsyncThunk(
-  'chat/loadChats',
+  'chat/requestLoadChats',
   async (userId, { rejectWithValue }) => {
     try {
       const res = await getChats(userId);
@@ -23,7 +23,7 @@ export const requestLoadChats = createAsyncThunk(
   }
 );
 export const requestCreateChat = createAsyncThunk(
-  'chat/createChat',
+  'chat/requestCreateChat',
   async (chatData, { rejectWithValue, dispatch }) => {
     try {
       const { userEmail, chatUserEmail, userId } = chatData;
