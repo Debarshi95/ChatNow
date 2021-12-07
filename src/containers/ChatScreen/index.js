@@ -1,5 +1,5 @@
-import { collection, onSnapshot, orderBy, query, where } from 'firebase/firestore';
 import React, { useEffect } from 'react';
+import { collection, onSnapshot, orderBy, query, where } from 'firebase/firestore';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom/cjs/react-router-dom.min';
 import MessageCard from '../../components/MessageCard';
