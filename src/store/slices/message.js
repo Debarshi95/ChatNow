@@ -1,33 +1,13 @@
 /* eslint-disable no-param-reassign */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { addDoc, collection, getDoc, query, serverTimestamp, where } from 'firebase/firestore';
-import { firestore } from '../../utils/firebase';
+import { addMessage } from '../../services';
 
-export const loadMessages = createAsyncThunk(
-  'message/loadMessage',
-  async (chatId, { rejectWithValue }) => {
-    try {
-      const docRef = query(collection(firestore, 'messages'), where('chatId', '==', chatId));
-      const res = await getDoc(docRef);
-      return res;
-    } catch (error) {
-      return rejectWithValue(error?.message);
-    }
-  }
-);
-
-export const createMessage = createAsyncThunk(
-  'message/createMessage',
+export const requestCreateMessage = createAsyncThunk(
+  'message/requestCreateMessage',
   async (messageData, { rejectWithValue }) => {
     try {
       const { message, chatId, sentBy } = messageData;
-      const dbQuery = collection(firestore, 'messages');
-      const res = await addDoc(dbQuery, {
-        message,
-        chatId,
-        sentBy,
-        createdAt: serverTimestamp(),
-      });
+      const res = await addMessage({ chatId, message, userId: sentBy });
       return res;
     } catch (error) {
       return rejectWithValue(error?.message);
@@ -47,22 +27,17 @@ export const chatSlice = createSlice({
   reducers: {
     setMessages: (state, action) => {
       const { payload } = action;
-      state.chatId = payload.chatId;
+
+      if (state.chatId !== '' && state.chatId !== payload.chatId) {
+        state.docs = [];
+      }
       state.docs = [...state.docs, ...payload.docs];
+
+      state.chatId = payload.chatId;
       state.loading = false;
     },
     unsetMessages: (state) => {
       state.docs = [];
-    },
-  },
-  extraReducers: {
-    [loadMessages.pending]: (state) => {
-      state.loading = true;
-    },
-    [loadMessages.fulfilled]: (state, action) => {
-      state.docs = action.payload;
-      state.loading = false;
-      state.error = '';
     },
   },
 });

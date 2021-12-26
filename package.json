@@ -7,14 +7,18 @@
     "@reduxjs/toolkit": "^1.6.2",
     "cross-env": "^7.0.3",
     "firebase": "^9.1.1",
+    "formik": "^2.2.9",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-icons": "^4.3.1",
     "react-modal": "^3.14.4",
     "react-redux": "^7.2.6",
     "react-responsive": "^9.0.0-beta.5",
     "react-router-dom": "^5.3.0",
     "react-scripts": "4.0.3",
-    "web-vitals": "^1.1.2"
+    "react-spinners": "^0.11.0",
+    "web-vitals": "^1.1.2",
+    "yup": "^0.32.11"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -25,6 +29,7 @@
     "lint:fix": "eslint --fix . --ignore-path .gitignore",
     "format": "prettier --write . --ignore-path .gitignore",
     "build:css": "postcss src/styles/tailwind.css -o src/styles/main.css",
+    "watch:css": "postcss -w src/styles/tailwind.css -o src/styles/main.css",
     "prebuild": "cross-env NODE_ENV=production yarn run build:css",
     "pre-commit": "lint-staged",
     "prepare": "husky install"

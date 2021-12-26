@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { createMessage } from '../../store/slices/message';
+import { requestCreateMessage } from '../../store/slices/message';
 
 const MessageInput = ({ chatId, userId }) => {
   const [input, setInput] = useState('');
   const dispatch = useDispatch();
 
   const handleSendMessage = () => {
-    dispatch(createMessage({ message: input, chatId, sentBy: userId }));
+    dispatch(requestCreateMessage({ message: input, chatId, sentBy: userId }));
     setInput('');
   };
 
