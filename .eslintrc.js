@@ -13,7 +13,7 @@ module.exports = {
     ecmaVersion: 12,
     sourceType: 'module',
   },
-  plugins: ['react'],
+  plugins: [],
   rules: {
     'react/jsx-filename-extension': ['warn', { extensions: ['.js', '.jsx'] }],
     'react/prop-types': 'off',
@@ -29,5 +29,12 @@ module.exports = {
       'error',
       { devDependencies: ['**/*.{js,jsx}', '**/*.test.{js,jsx}', '**/*.spec.{js,jsx}'] },
     ],
+    'react/jsx-props-no-spreading': [
+      'error',
+      {
+        html: 'ignore',
+      },
+    ],
+    'no-param-reassign': ['error', { props: true, ignorePropertyModificationsFor: ['state'] }],
   },
 };
