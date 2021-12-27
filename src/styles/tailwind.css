@@ -4,6 +4,6 @@
 
 @layer utilities {
   .content-container {
-    max-height: calc(105.5vh - theme('spacing.24'));
+    max-height: calc(105.1vh - theme('spacing.24'));
   }
 }
